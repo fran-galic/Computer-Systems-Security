@@ -1,0 +1,21 @@
+Sigurnosni opis sustava
+
+Zaštita zaporki i adresa ostvarena je kroz kombinaciju simetrične kriptografije i kriptografskih mehanizama za integritet. 
+Glavna lozinka koristi se za derivaciju dva kriptografska ključa putem PBKDF2 funkcije s 1.000.000 iteracija: 256-bitnog AES ključa za šifriranje 
+i 256-bitnog HMAC ključa za zaštitu integriteta. Podaci se pohranjuju u JSON formatu koji se šifrira AES-256-CBC algoritmom s nasumično generiranim 
+IV-om pri svakoj promjeni, osiguravajući da identični podaci daju različit šifrirani tekst.
+
+Povjerljivost je osigurana na tri razine: 
+1) Same zaporke nikad nisu pohranjene u plaintextu
+2) Adrese su šifrirane unutar JSON strukture
+3) Svaka promjena generira potpuno novi šifrirani blok
+
+Integritet je osiguran HMAC-SHA256 mehanizmom koji pokriva IV i šifrirane podatke. Bilo kakva modifikacija pohranjenih podataka (
+zamjena zaporki, promjena adresa) rezultirat će neuspjelom HMAC provjerom. Sustav eksplicitno odbacuje neautenticirane zahtjeve, sprječavajući napade zamjenom.
+
+Korištenje zasebnih ključeva za šifriranje i HMAC te praksa generiranja novog IV-a pri svakom pisanju osigurava da napadač ne može:
+- Utvrditi ekvivalenciju zaporki između različitih adresa
+- Detektirati promjene u istoj zaporci
+- Izvesti statističku analizu na temelju šifriranih podataka
+
+Ova implementacija u potpunosti zadovoljava zadane sigurnosne zahtjeve kroz strogu primjenu kriptografskih primitiva i odvajanje uloga pojedinih ključeva.
