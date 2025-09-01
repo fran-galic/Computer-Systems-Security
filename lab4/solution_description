@@ -1,0 +1,17 @@
+IMUNES-ovu topologiju sam podigao, pokrenuo prepare.sh i zatim vlastitom skriptom automatizirao osnovne provjere. Telnet i HTTP prema www rade, SSH port je otvoren ali bez ključa, a database (10000/tcp) je očekivano nedostupan izvana. DNS upiti s clienta prolaze te nmap pokazuje da su na www otvoreni ftp/ssh/telnet/http, dok je na dns živ samo 53/tcp/udp. Napredni sken (-sS, -sU, -O, -sV) potvrdio je Linux kernel 4-5 i lighttpd, a Wireshark je uredno zabilježio SYN sken s adrese 10.26.163.236. Ti rezultati čine “nultu” točku: sve se vidi prije paljenja vatrozida pa nakon FW.sh jasno pratimo što nestaje, a što ostaje dostupno.
+
+Nakon što sam aktivirao FW.sh, mreža se “stišala” baš kako smo planirali. Iz Interneta više ne prolaze Telnet ni SSH — nmap sada pokazuje samo otvoren HTTP (80/tcp) na www, dok su svi ostali portovi na www i dns filtrirani ili zatvoreni. Curl s clienta vraća 000 za www.example.edu, što znači da je vanjski virtualni DNS blokiran prema DMZ-u, a interni HTTP i dalje radi (kod 200) kad se ide iz LAN-a. DNS upiti prema 192.0.2.20 više ne prolaze s clienta (timeout), potvrđujući da smo TCP/UDP 53 iz Interneta ispravno odrezali. Najvažnije: nmap s database prema www sada pokazuje samo “filtered” porte, pa baza napokon ne može izaći u DMZ ni Internet. Sve skupa — pravila rade i mreža je zatvorena onako kako traži zadatak.
+
+Odgovri na pitanja na temu analize snimljenog mrežnog prometa
+
+S kojih IP-adresa se izvodi skeniranje?
+– 10.26.163.192
+
+Koje IP-adrese se skenira?
+– 10.26.163.236
+
+Koji su skenirani TCP portovi otvoreni?
+– 22/tcp, 80/tcp, 443/tcp (cilj vraća SYN/ACK)
+
+Koji su skenirani TCP portovi zatvoreni?
+– Nema zatvorenih, svi su ili otvoreni ili filtred
