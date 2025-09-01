@@ -2,6 +2,8 @@
 
 This repository contains my work and notes for the laboratory exercises of the course *Computer Systems Security* (FER, 2024/2025).
 
+Note: not all labs required coding — some deliverables were notes, reports, and configuration scripts as specified in the assignments.
+
 ## Lab 1: Symmetric Cryptography – Password Manager
 The task was to design and implement a prototype password manager that securely stores (address, password) pairs using symmetric cryptography.  
 Main functionalities:
@@ -31,7 +33,8 @@ The lab was carried out in a controlled VM environment with tools such as GDB, s
 ---
 
 ## Lab 3: Web Application Vulnerabilities
-This lab used DVWA (Damn Vulnerable Web Application) to explore common web application security issues.
+This lab used DVWA (Damn Vulnerable Web Application) to explore common web application security issues.  
+Official lab materials are available here: [srs-lab GitLab repository](https://gitlab.tel.fer.hr/srs/srs-lab)
 
 Tasks included:
 1. Command Injection: executing arbitrary system commands (e.g., reading `/etc/passwd`)
@@ -44,7 +47,8 @@ The focus was on both successful exploitation and describing mitigations (input 
 ---
 
 ## Lab 4: Network Protocol Security and Firewall
-The final lab was performed using the IMUNES network emulator. The topology included Internet, DMZ, and Private segments, with a firewall (FW) in between.
+The final lab was performed using the IMUNES network emulator. The topology included Internet, DMZ, and Private segments, with a firewall (FW) in between.  
+Official lab materials are available here: [srs-lab GitLab repository](https://gitlab.tel.fer.hr/srs/srs-lab)
 
 Main tasks:
 - Run and analyze services such as HTTP, SSH, DNS, Telnet across different network zones
